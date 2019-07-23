@@ -42,12 +42,17 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
           sqlu"""insert into "users"("id", "firstname", "lastname") select "id", "first", "last" from "users_old" """,
           sqlu"""drop table "users_old" """
         )))
+//    ,
+//    DBIOMigration(4)(
+//      DBIO.seq(
+//        throw new Exception("SHoul")
+//      )),
   }
 
   "init" should "create the migration tables" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.empty
+      override lazy val migrations = MigrationSeq.empty
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -67,7 +72,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   "reset" should "drop the migration table" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.empty
+      override lazy val migrations = MigrationSeq.empty
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -88,7 +93,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "drop all the tables" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.first
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -110,7 +115,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   "up" should "apply the migrations" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -135,7 +140,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "deprecate object models of previous versions" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -161,7 +166,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "apply empty migrations with no exception" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.empty
+      override lazy val migrations = MigrationSeq.empty
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -183,7 +188,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   "alreadyAppliedIds" should "return an empty seq at the beginning" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -201,7 +206,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return the applied migration id if one migration is applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.first
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -220,7 +225,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return all migration ids if multiple migrations are applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -239,7 +244,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   "notYetAppliedMigrations" should "return all migrations in the beginning" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -257,7 +262,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return an empty seq if all migrations are applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -276,7 +281,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return unapplied migrations if some migrations are applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.first    
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -285,7 +290,6 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
       assume(!tablesBefore.exists(_.name.name == "users"))
       m.init
       m.up
-      m.migrations = MigrationSeq.example
       assert(m.notYetAppliedMigrations === MigrationSeq.example.tail)
     } finally {
       m.reset
@@ -296,7 +300,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   "latest" should "return None if no migration is applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -314,7 +318,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return the the version number if one migration is applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.first
     }
     try {
       val tablesBefore = Await.result(m.db.run(
@@ -333,7 +337,7 @@ trait MigrationTests extends FlatSpec with PrivateMethodTester {
   it should "return the latest migration id if multiple migrations are applied" in {
     val m = new SlickMigrationManager {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       val tablesBefore = Await.result(m.db.run(

@@ -29,10 +29,10 @@ lazy val slickDependenciesWithTests = slickDependencies ++ List(
 ).map(_ % "test")
 
 lazy val commonSettings = Seq(
-  organization := "com.liyaos",
+  organization := "io.yields",
   licenses := Seq("Apache 2.0" ->
-    url("https://github.com/lastland/scala-forklift/blob/master/LICENSE")),
-  homepage := Some(url("https://github.com/lastland/scala-forklift")),
+    url("https://github.com/yields-io/scala-forklift/blob/master/LICENSE")),
+  homepage := Some(url("https://github.com/yields-io/scala-forklift")),
   scalaVersion := "2.12.1",
   scalacOptions += "-deprecation",
   scalacOptions += "-feature",
@@ -42,23 +42,17 @@ lazy val commonSettings = Seq(
   repoKind := { if (version.value.trim.endsWith("SNAPSHOT")) "snapshots"
                 else "releases" },
   publishTo := { repoKind.value match {
-    case "snapshots" => Some("snapshots" at
-        "https://oss.sonatype.org/content/repositories/snapshots")
+    case "snapshots" => Some("maven-snapshots" at
+        "https://nexus.yields.io/repository/maven-snapshots/")
     case "releases" =>  Some("releases"  at
         "https://oss.sonatype.org/service/local/staging/deploy/maven2")
   }},
-  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+  credentials +=  Credentials(Path.userHome / ".sbt" / ".yields.credentials"),
   pomExtra := (
     <scm>
-      <url>git@github.com:lastland/scala-forklift.git</url>
-      <connection>scm:git:git@github.com:lastland/scala-forklift.git</connection>
-      </scm>
-      <developers>
-      <developer>
-      <id>lastland</id>
-      <name>Yao Li</name>
-      </developer>
-      </developers>))
+      <url>git@github.com:yields-io/scala-forklift.git</url>
+      <connection>scm:git:git@github.com:yields-io/scala-forklift.git</connection>
+      </scm>))
 
 lazy val root = Project(
   "scala-forklift", file(".")).settings(

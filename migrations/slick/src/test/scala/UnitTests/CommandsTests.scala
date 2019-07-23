@@ -71,7 +71,7 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
       override lazy val config = theConfig
-      migrations = MigrationSeq.empty
+      override lazy val migrations = MigrationSeq.empty
     }
     try {
       m.initOp
@@ -89,7 +89,7 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickMigrationCommands
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.empty
+      override lazy val migrations = MigrationSeq.empty
     }
     try {
       m.init
@@ -110,7 +110,7 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickMigrationCommands
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.first
     }
     try {
       m.init
@@ -131,12 +131,11 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickMigrationCommands
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.first
+      override lazy val migrations = MigrationSeq.example.take(2)
     }
     try {
       m.init
       m.up
-      m.migrations = MigrationSeq.example.take(2)
       val stream = new ByteArrayOutputStream()
       Console.withOut(stream) {
         m.previewOp
@@ -154,7 +153,7 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickMigrationCommands
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       m.init
@@ -178,7 +177,7 @@ ${"\t"}CommandTests.profile.api.queryInsertActionExtensionMethods[CommandTests.t
         with SlickCodegen {
       override lazy val dbConfig = theDBConfig
       override lazy val config = theConfig
-      migrations = MigrationSeq.example
+      override lazy val migrations = MigrationSeq.example
     }
     try {
       m.init
@@ -206,7 +205,7 @@ class SQLiteCommandTests extends CommandTests with SQLiteConfigFile {
       with SlickMigrationCommands with SlickCodegen {
     override lazy val dbConfig = theDBConfig
     override lazy val config = theConfig
-    migrations = MigrationSeq.example
+    override lazy val migrations = MigrationSeq.example
   }
 
   "migrateOp" should "apply the migrations if the db is deleted after successful migrations" in {
